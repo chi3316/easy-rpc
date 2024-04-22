@@ -5,10 +5,7 @@ import com.easy.rpc.coder.EasyRpcEncoder;
 import com.easy.rpc.constant.Constants;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
@@ -49,6 +46,31 @@ public class EasyRpcClient implements Closeable {
         ChannelFuture connect = clientBootstrap.connect(host, port);
         connect.awaitUninterruptibly();
         return connect;
+    }
+
+    /**
+     * 发送请求
+     * @param request
+     * @return
+     */
+    public ChannelFuture sendRequest(Object request) {
+        Channel channel = connect().channel(); // 获取已连接的Channel
+
+        // 发送请求并等待响应
+        ChannelFuture writeFuture = channel.writeAndFlush(request);
+
+        // 添加监听器来处理响应或错误
+        writeFuture.addListener((ChannelFutureListener) future -> {
+            if (future.isSuccess()) {
+                // 请求发送成功
+                // 这里可以添加代码处理响应，例如打印或解析响应
+            } else {
+                // 请求发送失败
+                future.cause().printStackTrace(); // 打印异常堆栈信息
+            }
+        });
+
+        return writeFuture;
     }
 
     @Override

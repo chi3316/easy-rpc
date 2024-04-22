@@ -37,7 +37,7 @@ public class EasyRpcServer {
                         new ChannelInitializer<SocketChannel>() {
                             @Override
                             protected void initChannel(SocketChannel ch) throws Exception {
-                                ch.pipeline().addLast("demp-rpc-decoder", new EasyRpcDecoder());
+                                ch.pipeline().addLast("demo-rpc-decoder", new EasyRpcDecoder());
                                 ch.pipeline().addLast("demo-rpc-encoder", new EasyRpcEncoder());
                                 ch.pipeline().addLast("server-handler", new EasyRpcServerHandler());
                             }

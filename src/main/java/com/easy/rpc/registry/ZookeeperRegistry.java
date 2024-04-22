@@ -11,6 +11,7 @@ import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.details.InstanceSerializer;
 import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ public class ZookeeperRegistry<T> implements Registry<T> {
     private String address = "localhost:2181";
 
     public void start() throws Exception {
-        String root = "/demo/rpc";
+        String root = "/easy/rpc";
         // 初始化CuratorFramework
         CuratorFramework client = CuratorFrameworkFactory.newClient(address, new ExponentialBackoffRetry(1000, 3));
         client.start();  // 启动Curator客户端
@@ -68,4 +69,35 @@ public class ZookeeperRegistry<T> implements Registry<T> {
                 .filter(s -> s.getName().equals(name))
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 测试用:输出所有的ServerInstance
+     * @return
+     */
+    public List<ServerInfo> queryRemoteNodes() {
+
+        List<ServerInfo> ServerInfoDetails = new ArrayList<>();
+
+        // 查询 ServiceCache 获取全部的 ServiceInstance 对象
+
+        List<ServiceInstance<T>> serviceInstances =
+
+                serviceCache.getInstances();
+
+        serviceInstances.forEach(serviceInstance -> {
+
+            // 从每个ServiceInstance对象的playload字段中反序列化得
+
+            // 到ServerInfo实例
+
+            ServerInfo instance = (ServerInfo)serviceInstance.getPayload();
+
+            ServerInfoDetails.add(instance);
+
+        });
+
+        return ServerInfoDetails;
+
+    }
+
 }

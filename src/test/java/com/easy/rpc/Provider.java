@@ -1,10 +1,12 @@
-package test;
+package com.easy.rpc;
 
 import com.easy.rpc.factory.BeanManager;
 import com.easy.rpc.registry.ServerInfo;
 import com.easy.rpc.registry.ZookeeperRegistry;
 import com.easy.rpc.transport.EasyRpcServer;
 import org.apache.curator.x.discovery.ServiceInstance;
+
+import java.util.List;
 
 public class Provider {
     public static void main(String[] args) throws Exception {
@@ -17,6 +19,11 @@ public class Provider {
         ServerInfo serverInfo = new ServerInfo("127.0.0.1", 20880);
         discovery.registerService(
                 ServiceInstance.<ServerInfo>builder().name("demoService").payload(serverInfo).build());
+
+        //查看缓存的服务实例
+        List<ServerInfo> serverInfos = discovery.queryRemoteNodes();
+        System.out.println(serverInfos);
+
         // 启动DemoRpcServer，等待Client的请求
         EasyRpcServer rpcServer = new EasyRpcServer(20880);
         rpcServer.start();
